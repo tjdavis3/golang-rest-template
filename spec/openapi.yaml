@@ -1,0 +1,16 @@
+info:
+  license:
+    name: MIT
+  title: API
+  version: 1.0.0
+openapi: 3.0.0
+
+components:
+  schemas:
+    ErrResponse:
+      properties:
+        msg:
+          type: string
+        request_id:
+          type: string
+      type: object
