@@ -8,9 +8,6 @@ import (
 )
 
 const (
-	// DB
-	ConfigDBURN    = "db.urn"
-	ConfigDBDriver = "db.driver"
 
 	// Log ("json" || "")
 	ConfigLogFormat = "log"
@@ -27,8 +24,6 @@ func buildFlags() *pflag.FlagSet {
 	flags := pflag.NewFlagSet(os.Args[0], pflag.ExitOnError)
 
 	flags.String(ConfigLogFormat, "", "log format")
-	flags.String(ConfigDBURN, ":memory:?_foreign_keys=on", "dburn")
-	flags.String(ConfigDBDriver, "sqlite3", "db driver(mysql/sqlite3)")
 	flags.String(ConfigHTTPAddr, ":8080", "HTTP API listen address")
 
 	flags.String(ConfigTLSCert, "", "tls certificate for api token")
