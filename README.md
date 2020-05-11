@@ -8,7 +8,6 @@ This includes extremely simple boilerplate and example for
 - metrics
 - graceful shutdown
 - configuration through flag, env. (no files, but viper also can load configuration from files)
-- docker image: [acadx0/go-restapi-boilerplate](https://hub.docker.com/repository/docker/acadx0/go-restapi-boilerplate)
 - kubernetes deploy with kustomize
 - ...
 
