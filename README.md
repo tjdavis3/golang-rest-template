@@ -1,4 +1,4 @@
-# go-restapi-boilerplate
+# golang-rest-template
 
 
 This includes extremely simple boilerplate and example for
