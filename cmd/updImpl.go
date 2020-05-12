@@ -10,8 +10,8 @@ import (
 	"strings"
 )
 
-const implFname = "api/serverImpl.go"
-const genFname = "api/api.gen.go"
+const implFname = "serverImpl.go"
+const genFname = "api.gen.go"
 const funcSignature = `func (s *server) %s(w http.ResponseWriter, r *http.Request) {
   http.Error(w, http.StatusText(http.StatusNotImplemented), http.StatusNotImplemented)
 }
@@ -62,7 +62,7 @@ func loadInterface(filename string) []string {
 
 	ifRE := regexp.MustCompile(`\Atype ServerInterface interface {`)
 	endRE := regexp.MustCompile(`.*}.*`)
-	funcRE := regexp.MustCompile(`\A([a-zA-Z0-9]+).*`)
+	funcRE := regexp.MustCompile(`^[[:blank:]]*([a-zA-Z0-9]+).*`)
 
 	file, err := os.Open(filename)
 	if err != nil {
