@@ -12,6 +12,10 @@ import (
 
 const implFname = "api/serverImpl.go"
 const genFname = "api/api.gen.go"
+const funcSignature = `func (s *server) %s(w http.ResponseWriter, r *http.Request) {
+  http.Error(w, http.StatusText(http.StatusNotImplemented), http.StatusNotImplemented)
+}
+`
 
 func itemExists(arrayType interface{}, item interface{}) bool {
 	arr := reflect.ValueOf(arrayType)
@@ -102,7 +106,7 @@ func main() {
 
 	for _, intFunc := range intFuncs {
 		if !itemExists(functions, intFunc) {
-			line := fmt.Sprintf("func (s *server) %s(w http.ResponseWriter, r *http.Request) {\n}\n", intFunc)
+			line := fmt.Sprintf(funcSignature, intFunc)
 			log.Println("Adding ", line)
 			_, err = fd.WriteString(line)
 			if err != nil {
