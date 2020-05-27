@@ -46,7 +46,7 @@ func loadImpl(filename string) []string {
 
 	for scanner.Scan() {
 		line := scanner.Text()
-		line = strings.Trim(line, " ")
+		line = strings.TrimSpace(line)
 		if re.MatchString(line) {
 			functions = append(functions, re.ReplaceAllString(line, "$1"))
 		}
@@ -79,7 +79,10 @@ func loadInterface(filename string) []string {
 		line := scanner.Text()
 		if ifRE.MatchString(line) {
 			for scanner.Scan() {
-				line = strings.Trim(scanner.Text(), " ")
+				line = strings.TrimSpace(scanner.Text())
+                                if strings.HasPrefix(line, "//") {
+                                        continue
+				}
 				if endRE.MatchString(line) {
 					break
 				}
