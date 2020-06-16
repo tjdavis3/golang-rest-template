@@ -14,6 +14,7 @@ import (
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/render"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/hlog"
@@ -103,10 +104,20 @@ func NewServer(ctx context.Context, v *viper.Viper) (*server, error) {
 
 	// health check
 	r.HandleFunc("/ping", ping)
+	r.HandleFunc("/openapi.json", spec)
 
 	s.root = r
 
 	return s, nil
+}
+
+func spec(w http.ResponseWriter, r *http.Request) {
+	swagger, err := GetSwagger()
+	if err != nil {
+		render.Render(w, r, ErrServerError(r, err))
+		return
+	}
+	render.JSON(w, r, swagger)
 }
 
 // ping is handler responding to health-check request
