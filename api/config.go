@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/appsflyer/go-logger/shims/zerolog"
+	sentry "github.com/getsentry/sentry-go"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -31,10 +32,9 @@ func buildFlags() *pflag.FlagSet {
 }
 
 func Configure(args []string) *viper.Viper {
-	log.SetOutput(Log)
 	err := sentry.Init(sentry.ClientOptions{})
 	if err != nil {
-		log.Error("Error Initializing sentry: ", "error", err.Error())
+		log.Fatal("Error Initializing sentry: ", "error", err.Error())
 	}
 
 	v := viper.New()

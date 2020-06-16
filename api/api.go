@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"../models"
+	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -86,9 +87,8 @@ func NewServer(ctx context.Context, v *viper.Viper) (*server, error) {
 		// like this,
 		// r.Use(hlog.CustomHeaderHandler("reqId", "X-Request-Id"))
 		r.Use(hlog.RequestIDHandler("req_id", "Request-Id"))
-		r.Use(sentryHandler)
 		r.Use(mwMetrics)
-		r.Handle("/", HandlerFromMux(s, r))
+		r.Handle("/", sentryHandler.Handle(HandlerFromMux(s, r)))
 	})
 
 	// health check

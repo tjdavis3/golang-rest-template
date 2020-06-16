@@ -1,5 +1,7 @@
 package api
 
+import "net/http"
+
 // func (s *server) ReadUser(w http.ResponseWriter, r *http.Request) {
 // 	ctx := r.Context()
 // 	log.Ctx(ctx).Debug().Msg("ReadUser")
