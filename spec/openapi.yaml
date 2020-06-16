@@ -7,13 +7,36 @@ info:
   license:
     name: MIT
 paths:
+  /test:
+    summary: test api
+    get:
+      responses:
+        "200":
+          description: success
+        "500":
+          $ref: '#/components/responses/Error'
+      summary: Test
 components:
-  responses:
+  schemas:
     ErrResponse:
       description: Error response
+      required:
+      - msg
+      type: object
       properties:
         msg:
+          description: The message explaining the error
           type: string
         request_id:
+          description: The request id to track errors
           type: string
-      type: object
+        HTTPStatusCode:
+          description: The HTTP response code
+          type: integer
+  responses:
+    Error:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrResponse'
+      description: ""
