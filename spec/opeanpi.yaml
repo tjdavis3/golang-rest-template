@@ -1,0 +1,37 @@
+---
+openapi: 3.0.0
+info:
+  title: API
+  version: 0.0.0
+  description: REST API
+  license:
+    name: MIT
+paths:
+  /ping:
+    description: Returns a simple HTTP 200 with the text pong
+    get:
+      responses:
+        "200":
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Returns pong
+  /metrics:
+    get:
+      responses:
+        "200":
+          content:
+            text/plain: {}
+          description: Returns prometheus formatted metrics
+      summary: Gather metrics about the application
+components:
+  responses:
+    ErrResponse:
+      description: Error response
+      properties:
+        msg:
+          type: string
+        request_id:
+          type: string
+      type: object
