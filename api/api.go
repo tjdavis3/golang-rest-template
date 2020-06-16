@@ -88,18 +88,10 @@ func NewServer(ctx context.Context, v *viper.Viper) (*server, error) {
 		// like this,
 		// r.Use(hlog.CustomHeaderHandler("reqId", "X-Request-Id"))
 		r.Use(hlog.RequestIDHandler("req_id", "Request-Id"))
+		r.Use(sentryHandler.Handle)
 		r.Use(mwMetrics)
 		handler := HandlerFromMux(s, r)
-		swagger, err := GetSwagger()
-		if err != nil {
-			oapihandler, err := NewValidationHandler(handler, swagger)
-			if err != nil {
-				log.Error().Msg(err.Error())
-			}
-			handler = oapihandler
-		}
-
-		r.Handle("/", sentryHandler.Handle(handler))
+		r.Handle("/", handler)
 	})
 
 	// health check
