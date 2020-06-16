@@ -68,7 +68,12 @@ func NewServer(ctx context.Context, v *viper.Viper) (*server, error) {
 	r.Handle("/metrics", promhttp.Handler())
 
 	r.Group(func(r chi.Router) {
+		// If you are service is behind load balancer like nginx, you might want to
+		// use X-Request-ID instead of injecting request id. You can do some thing
+		// like this,
+		// r.Use(hlog.CustomHeaderHandler("reqId", "X-Request-Id"))
 		r.Use(middleware.Recoverer)
+		r.Use(hlog.RequestIDHandler("req_id", "Request-Id"))
 		r.Use(hlog.NewHandler(log.Logger))
 		r.Use(hlog.AccessHandler(func(r *http.Request, status, size int, duration time.Duration) {
 			hlog.FromRequest(r).Info().
@@ -82,13 +87,10 @@ func NewServer(ctx context.Context, v *viper.Viper) (*server, error) {
 		r.Use(hlog.RemoteAddrHandler("ip"))
 		r.Use(hlog.UserAgentHandler("user_agent"))
 		r.Use(hlog.RefererHandler("referer"))
+		r.Use(Recoverer)
 
-		// If you are service is behind load balancer like nginx, you might want to
-		// use X-Request-ID instead of injecting request id. You can do some thing
-		// like this,
-		// r.Use(hlog.CustomHeaderHandler("reqId", "X-Request-Id"))
-		r.Use(hlog.RequestIDHandler("req_id", "Request-Id"))
 		r.Use(sentryHandler.Handle)
+		r.Use(EventEnhancer)
 		r.Use(mwMetrics)
 		handler := HandlerFromMux(s, r)
 		r.Handle("/", handler)
