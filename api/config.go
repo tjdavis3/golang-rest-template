@@ -1,8 +1,10 @@
 package api
 
 import (
+	"log"
 	"os"
 
+	"github.com/appsflyer/go-logger/shims/zerolog"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -20,19 +22,21 @@ const (
 	ConfigTLSKey  = "tls.key"
 )
 
+var Log = zerolog.New(nil)
+
 func buildFlags() *pflag.FlagSet {
 	flags := pflag.NewFlagSet(os.Args[0], pflag.ExitOnError)
-
-	flags.String(ConfigLogFormat, "", "log format")
-	flags.String(ConfigHTTPAddr, ":8080", "HTTP API listen address")
-
-	flags.String(ConfigTLSCert, "", "tls certificate for api token")
-	flags.String(ConfigTLSKey, "", "tls key for api token")
 
 	return flags
 }
 
 func Configure(args []string) *viper.Viper {
+	log.SetOutput(Log)
+	err := sentry.Init(sentry.ClientOptions{})
+	if err != nil {
+		log.Error("Error Initializing sentry: ", "error", err.Error())
+	}
+
 	v := viper.New()
 
 	// Setup command line flags

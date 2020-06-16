@@ -1,5 +1,12 @@
-# golang-rest-template
 
+## Configuration
+
+SENTRY_DSN
+  DSN for sentry crash detection
+SENTRY_ENVIRONMENT
+  Environment to report to sentry
+
+# golang-rest-template
 
 This includes extremely simple boilerplate and example for
 - openapi v3 integration(server gen, documents)

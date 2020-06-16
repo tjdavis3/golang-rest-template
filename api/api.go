@@ -57,6 +57,11 @@ func NewServer(ctx context.Context, v *viper.Viper) (*server, error) {
 
 	// routers, middlewares
 	r := chi.NewRouter()
+	sentryHandler := sentryhttp.New(sentryhttp.Options{
+		Repanic:         true,
+		WaitForDelivery: true,
+		// Timeout for the event delivery requests.
+		Timeout: 3})
 
 	r.Handle("/metrics", promhttp.Handler())
 
@@ -81,6 +86,7 @@ func NewServer(ctx context.Context, v *viper.Viper) (*server, error) {
 		// like this,
 		// r.Use(hlog.CustomHeaderHandler("reqId", "X-Request-Id"))
 		r.Use(hlog.RequestIDHandler("req_id", "Request-Id"))
+		r.Use(sentryHandler)
 		r.Use(mwMetrics)
 		r.Handle("/", HandlerFromMux(s, r))
 	})
