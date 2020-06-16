@@ -1,6 +1,9 @@
 package api
 
-//import "net/http"
+import (
+	"io"
+	"net/http"
+)
 
 // func (s *server) ReadUser(w http.ResponseWriter, r *http.Request) {
 // 	ctx := r.Context()
@@ -14,3 +17,6 @@ package api
 // 	render.JSON(w, r, u)
 // 	return
 // }
+func (s *server) GetTest(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, "success\n")
+}

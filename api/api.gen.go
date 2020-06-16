@@ -6,15 +6,77 @@ package api
 import (
 	"bytes"
 	"compress/gzip"
+	"context"
 	"encoding/base64"
 	"fmt"
+	"github.com/deepmap/oapi-codegen/pkg/runtime"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi"
 	"net/http"
 	"strings"
 )
 
+// ErrResponse defines model for ErrResponse.
+type ErrResponse struct {
+
+	// The HTTP response code
+	HTTPStatusCode int `json:"HTTPStatusCode"`
+
+	// The message explaining the error
+	Msg string `json:"msg"`
+
+	// The request id to track errors
+	RequestID string `json:"requestID"`
+}
+
+// Error defines model for Error.
+type Error ErrResponse
+
+// GetTestParams defines parameters for GetTest.
+type GetTestParams struct {
+
+	// pass an id
+	Id int `json:"id"`
+}
+
 type ServerInterface interface {
+	// Test (GET /test)
+	GetTest(w http.ResponseWriter, r *http.Request)
+}
+
+// ParamsForGetTest operation parameters from context
+func ParamsForGetTest(ctx context.Context) *GetTestParams {
+	return ctx.Value("GetTestParams").(*GetTestParams)
+}
+
+// GetTest operation middleware
+func GetTestCtx(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		var err error
+
+		// Parameter object where we will unmarshal all parameters from the context
+		var params GetTestParams
+
+		// ------------- Required query parameter "id" -------------
+		if paramValue := r.URL.Query().Get("id"); paramValue != "" {
+
+		} else {
+			http.Error(w, "Query argument id is required, but not found", http.StatusBadRequest)
+			return
+		}
+
+		err = runtime.BindQueryParameter("form", true, true, "id", r.URL.Query(), &params.Id)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid format for parameter id: %s", err), http.StatusBadRequest)
+			return
+		}
+
+		ctx = context.WithValue(ctx, "GetTestParams", &params)
+
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
 
 // Handler creates http.Handler with routing matching OpenAPI spec.
@@ -24,6 +86,10 @@ func Handler(si ServerInterface) http.Handler {
 
 // HandlerFromMux creates http.Handler with routing matching OpenAPI spec based on the provided mux.
 func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
+	r.Group(func(r chi.Router) {
+		r.Use(GetTestCtx)
+		r.Get("/test", si.GetTest)
+	})
 
 	return r
 }
@@ -31,8 +97,14 @@ func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/xyKMQoCMRAA/zJ1OE7strO8QrDwA+FYMZDbDSbahPxdct3MMJ3dj+Km1irSRyDZy5FO",
-	"Trta1YkWD0W4b09GoKWWp94eG4GffmpyQ7gs67LOwYtaLAnheqZAie1dEfvmPP4BAAD//0STAWlyAAAA",
+	"H4sIAAAAAAAC/2xTTW/bMAz9KwK3o1AHG3bRbdiCLYcBRetb0YMms466WFJJelgQ+L8PlBO3zcclEj+e",
+	"Hh+fDxDyUHLCJAzuAIRccmKslzVRJj2EnAST6NGXsovBS8ypeeacNMZhi4PX00fCJ3DwoXlFbeYsN2ui",
+	"uyM6TPqzx8bTW0vWHaBDDhSLPgNuJmJO3MBCoVyQJM48f7bt7b14Gflb7q60t1s0WrMgmKB1FmRfEBzE",
+	"JNgjwWRh4P56/4DMvkeD/8rOxxRTb2SLBqtECxILxdQrEOHLiCyb79fhjmkTOyPZCPnwZ8biS7AjWiTs",
+	"wD1Uim/x7fn8jwtC/v2MQaBqHdNTvuRyt75vzdfbDVjYxYBH9ZMftP3XptVRJMpOr3PZXySee1c3q5uV",
+	"FuSCyZcIDj7XkIXiZVtX0why9U2P9U/XVs2z6cDBD5RW89pAfkBBYnAP5ySLZzY+mdiBzgEOXkakPdgT",
+	"0Zp41UhoRPvGledrnh7te6N/Wq0upeExBGTWAb/M+WvuXnCa+Wupth6HwdNeV63TvYuoHkbFmqbpfwAA",
+	"AP//8ZooL30DAAA=",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code

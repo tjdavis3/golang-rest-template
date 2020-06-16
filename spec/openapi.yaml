@@ -1,42 +1,34 @@
----
 openapi: 3.0.0
 info:
-  title: API
-  version: 0.0.0
-  description: REST API
-  license:
-    name: MIT
+    title: API
+    version: 0.0.0
+    description: REST API
+    license:
+        name: MIT
 paths:
-  /test:
-    summary: test api
-    get:
-      responses:
-        "200":
-          description: success
-        "500":
-          $ref: '#/components/responses/Error'
-      summary: Test
 components:
-  schemas:
-    ErrResponse:
-      description: Error response
-      required:
-      - msg
-      type: object
-      properties:
-        msg:
-          description: The message explaining the error
-          type: string
-        request_id:
-          description: The request id to track errors
-          type: string
-        HTTPStatusCode:
-          description: The HTTP response code
-          type: integer
-  responses:
-    Error:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrResponse'
-      description: ""
+    schemas:
+        ErrResponse:
+            description: Error response
+            required:
+                - msg
+                - requestID
+                - HTTPStatusCode
+            type: object
+            properties:
+                msg:
+                    description: The message explaining the error
+                    type: string
+                requestID:
+                    description: The request id to track errors
+                    type: string
+                HTTPStatusCode:
+                    description: The HTTP response code
+                    type: integer
+    responses:
+        Error:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ErrResponse'
+            description: ''
