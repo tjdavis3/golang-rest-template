@@ -32,7 +32,7 @@ func buildFlags() *pflag.FlagSet {
 }
 
 func Configure(args []string) *viper.Viper {
-	err := sentry.Init(sentry.ClientOptions{})
+	err := sentry.Init(sentry.ClientOptions{AttachStacktrace: true})
 	if err != nil {
 		log.Fatal("Error Initializing sentry: ", "error", err.Error())
 	}

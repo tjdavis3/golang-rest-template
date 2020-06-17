@@ -79,7 +79,6 @@ func NewServer(ctx context.Context, v *viper.Viper) (*server, error) {
 		// like this,
 		// r.Use(hlog.CustomHeaderHandler("reqId", "X-Request-Id"))
 		r.Use(middleware.Recoverer)
-		r.Use(hlog.RequestIDHandler("req_id", "Request-Id"))
 		r.Use(hlog.NewHandler(log.Logger))
 		r.Use(hlog.AccessHandler(func(r *http.Request, status, size int, duration time.Duration) {
 			hlog.FromRequest(r).Info().
@@ -90,15 +89,16 @@ func NewServer(ctx context.Context, v *viper.Viper) (*server, error) {
 				Dur("duration", duration).
 				Msg("")
 		}))
+		r.Use(hlog.RequestIDHandler("req_id", "Request-Id"))
 		r.Use(hlog.RemoteAddrHandler("ip"))
 		r.Use(hlog.UserAgentHandler("user_agent"))
 		r.Use(hlog.RefererHandler("referer"))
 		r.Use(Recoverer)
 
+		r.Use(jwtMiddleware.Handler)
 		r.Use(sentryHandler.Handle)
 		r.Use(EventEnhancer)
 		r.Use(mwMetrics)
-		r.Use(jwtMiddleware.Handler)
 		handler := HandlerFromMux(s, r)
 		r.Handle("/", handler)
 	})

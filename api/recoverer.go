@@ -9,6 +9,7 @@ import (
 	"github.com/rs/zerolog/hlog"
 )
 
+// EventEnhancer is an http middleware to add the request ID to the sentry tags
 func EventEnhancer(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
