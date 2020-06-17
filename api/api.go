@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"../models"
+	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -65,6 +66,11 @@ func NewServer(ctx context.Context, v *viper.Viper) (*server, error) {
 		// Timeout for the event delivery requests.
 		Timeout: 3})
 
+	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
+		ErrorHandler:        JWTErrorHandler,
+		CredentialsOptional: false,
+	})
+
 	r.Handle("/metrics", promhttp.Handler())
 
 	r.Group(func(r chi.Router) {
@@ -92,6 +98,7 @@ func NewServer(ctx context.Context, v *viper.Viper) (*server, error) {
 		r.Use(sentryHandler.Handle)
 		r.Use(EventEnhancer)
 		r.Use(mwMetrics)
+		r.Use(jwtMiddleware.Handler)
 		handler := HandlerFromMux(s, r)
 		r.Handle("/", handler)
 	})
