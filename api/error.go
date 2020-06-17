@@ -79,3 +79,24 @@ func ErrorEncoder(ctx context.Context, err error, w http.ResponseWriter) {
 
 	w.Write(body)
 }
+
+type JWTErr struct {
+	Status int
+	Msg    string
+}
+
+func (jwte *JWTErr) StatusCode() int {
+	return jwte.Status
+}
+func (jwte *JWTErr) Error() string {
+	return jwte.Msg
+}
+
+// JWTErrorHandler formatts JWT validation errors with the builtin error
+// response.  This is passed to the JWTMiddleware
+func JWTErrorHandler(w http.ResponseWriter, r *http.Request, err string) {
+	jerr := &JWTErr{Status: http.StatusUnauthorized, Msg: err}
+	ctx := r.Context()
+	ErrorEncoder(ctx, jerr, w)
+	return
+}
