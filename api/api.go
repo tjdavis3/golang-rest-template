@@ -93,12 +93,12 @@ func NewServer(ctx context.Context, v *viper.Viper) (*server, error) {
 		r.Use(hlog.RemoteAddrHandler("ip"))
 		r.Use(hlog.UserAgentHandler("user_agent"))
 		r.Use(hlog.RefererHandler("referer"))
+		r.Use(mwMetrics)
 		r.Use(Recoverer)
 
 		r.Use(jwtMiddleware.Handler)
 		r.Use(sentryHandler.Handle)
 		r.Use(EventEnhancer)
-		r.Use(mwMetrics)
 		handler := HandlerFromMux(s, r)
 		r.Handle("/", handler)
 	})
