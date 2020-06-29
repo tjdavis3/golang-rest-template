@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"../models"
-	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -66,10 +65,17 @@ func NewServer(ctx context.Context, v *viper.Viper) (*server, error) {
 		// Timeout for the event delivery requests.
 		Timeout: 3})
 
-	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
-		ErrorHandler:        JWTErrorHandler,
-		CredentialsOptional: false,
-	})
+	// TODO: Add jwt-go-middleware to validate JWT.  For the ValidationKeyGetter see https://auth0.com/docs/quickstart/backend/golang/01-authorization
+	// jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
+	// 	ErrorHandler:        JWTErrorHandler,
+	// 	CredentialsOptional: false,
+	// 	Debug:               true,
+	// 	ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+	// 		secret := "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7/mAP0uVZQcYC3JtDCjelfZwqNp3kbOsBG2d2ILcDIEUEMs2VnTgTaMHky2/3dLF/wVYpD3ObNquIJslwdxrxxyXBoNKEkzdI34UgjB+ZcX7S++THLyg7bAkEMAn9jGK3wnPHpgK5Karxnu5dCBU6QPocekWeu5ibQr8gnxiaR4WdsYZhaRwRD0VvH1kSOtx2ceYnmtRACJv3MtPraJxUmVsa7Yzu8GRCd+EqeKRMkX/p8hNCdws04t9dO3AemVGI2gGAwJ3d16yPNd0hFWFOF58CVTD6fyDqPqE74DhSzBrJmggEkaxehLUpUofvP9WPrQz8YsDyMGjqByun+8VHQIDAQAB"
+	// 		return []byte(secret), nil
+	// 	},
+	// 	SigningMethod: jwt.SigningMethodRS256,
+	// })
 
 	r.Handle("/metrics", promhttp.Handler())
 
