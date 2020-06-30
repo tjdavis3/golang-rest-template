@@ -7,7 +7,6 @@ import (
 	"context"
 	"io"
 	"net/http"
-	"os"
 	"time"
 
 	"../models"
@@ -19,32 +18,24 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/hlog"
 	"github.com/rs/zerolog/log"
-	"github.com/spf13/viper"
 )
 
 type server struct {
 	db         *interface{}
 	httpClient *http.Client
-	config     *viper.Viper
+	config     *Cfg
 	root       http.Handler
 }
 
-func NewServer(ctx context.Context, v *viper.Viper) (*server, error) {
+func NewServer(ctx context.Context, cfg *Cfg) (*server, error) {
 	var err error
 
 	s := &server{
-		config: v,
+		config: cfg,
 	}
 
 	zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	log.Logger = log.Logger.With().Timestamp().Caller().Logger()
-
-	// global logger
-	if v.GetString(ConfigLogFormat) == "json" {
-		log.Logger = zerolog.New(os.Stderr)
-	} else {
-		log.Logger = zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr})
-	}
 
 	// db
 	s.db, err = models.InitializeDB(s.config)
@@ -102,7 +93,7 @@ func NewServer(ctx context.Context, v *viper.Viper) (*server, error) {
 		r.Use(mwMetrics)
 		r.Use(Recoverer)
 
-		r.Use(jwtMiddleware.Handler)
+		// r.Use(jwtMiddleware.Handler)
 		r.Use(sentryHandler.Handle)
 		r.Use(EventEnhancer)
 		handler := HandlerFromMux(s, r)

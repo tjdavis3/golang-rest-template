@@ -1,58 +1,42 @@
 package api
 
 import (
-	"log"
-	"os"
+	log "github.com/magna5/go-logger"
+	"github.com/magna5/go-logger/shims/zerolog"
 
-	"github.com/appsflyer/go-logger/shims/zerolog"
 	sentry "github.com/getsentry/sentry-go"
-	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
+	flags "github.com/jessevdk/go-flags"
+	"github.com/joeshaw/envdecode"
+	"github.com/joho/godotenv"
 )
 
-const (
-
-	// Log ("json" || "")
-	ConfigLogFormat = "log"
-
-	// http
-	ConfigHTTPAddr = "http"
-
-	// certificate
-	ConfigTLSCert = "tls.crt"
-	ConfigTLSKey  = "tls.key"
-)
-
-var Log = zerolog.New(nil)
-
-func buildFlags() *pflag.FlagSet {
-	flags := pflag.NewFlagSet(os.Args[0], pflag.ExitOnError)
-
-	return flags
+// Cfg configuration structure
+type Cfg struct {
+	Port int `env:"PORT,default=8080" short:"p" long:"port" description:"HTTP Port"`
 }
 
-func Configure(args []string) *viper.Viper {
+// Config is the current application configuration
+var Config = &Cfg{}
+
+func Configure(args []string) *Cfg {
+	log.RootLogger = zerolog.New(nil)
+
 	err := sentry.Init(sentry.ClientOptions{AttachStacktrace: true})
 	if err != nil {
 		log.Fatal("Error Initializing sentry: ", "error", err.Error())
 	}
 
-	v := viper.New()
-
-	// Setup command line flags
-	flags := buildFlags()
-	if err := flags.Parse(args); err != nil {
+	err = godotenv.Load()
+	if err != nil {
 		panic(err)
 	}
-
-	// Configuration from flags
-	if err := v.BindPFlags(flags); err != nil {
+	err = envdecode.Decode(Config)
+	if err != nil {
 		panic(err)
 	}
-
-	v.SetEnvPrefix(os.Args[0])
-
-	// Configuration from env
-	v.AutomaticEnv()
-	return v
+	_, err = flags.Parse(Config)
+	if err != nil {
+		panic(err)
+	}
+	return Config
 }

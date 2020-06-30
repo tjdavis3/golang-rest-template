@@ -2,31 +2,31 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"log"
+	log "github.com/magna5/go-logger"
 
 	"../../api"
-
 )
 
 func main() {
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	// log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	// configurtion with viper
-	v := api.Configure(os.Args)
+	cfg := api.Configure(os.Args)
 
 	// create server instance
-	s, err := api.NewServer(context.Background(), v)
+	s, err := api.NewServer(context.Background(), cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	server := &http.Server{
-		Addr:    v.GetString(api.ConfigHTTPAddr),
+		Addr:    fmt.Sprintf(":%d", cfg.Port),
 		Handler: s,
 	}
 
