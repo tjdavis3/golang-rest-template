@@ -1,11 +1,4 @@
 
-## Configuration
-
-SENTRY_DSN
-  DSN for sentry crash detection
-SENTRY_ENVIRONMENT
-  Environment to report to sentry
-
 # golang-rest-template
 
 This includes extremely simple boilerplate and example for
@@ -97,3 +90,11 @@ Here are the libraries I chose. Some of them are relatively new and may not be m
 
 - **Metrics.** - [Prometheus](https://github.com/prometheus/client_golang)  
   It is extremely easy to add custom metrics to your server, check [api/metrics.go](api/metrics.go).
+
+# Documentation
+
+* [Overview](docs/README.md)
+* [Configuration](docs/config.md)
+* [Metrics](docs/metrics.md)
+* [API Overview](docs/api/README.md)
+

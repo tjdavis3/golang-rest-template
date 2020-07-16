@@ -1,0 +1,13 @@
+
+site_name: "REST API"
+nav:
+  - Overview: README.md
+  - Configuration: config.md
+  - Metrics: metrics.md
+  - API:
+    - api/README.md
+    - Response Codes: api/errors.md
+    - Getting Started: api/getting_started.md
+    - Browseable API: api/api.html
+
+theme: windmill
