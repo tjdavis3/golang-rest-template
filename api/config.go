@@ -7,7 +7,7 @@ import (
 	sentry "github.com/getsentry/sentry-go"
 	flags "github.com/jessevdk/go-flags"
 	"github.com/joeshaw/envdecode"
-	"github.com/joho/godotenv"
+	"github.com/magna5/godotenv"
 )
 
 // Cfg configuration structure
@@ -26,7 +26,7 @@ func Configure(args []string) *Cfg {
 		log.Fatal("Error Initializing sentry: ", "error", err.Error())
 	}
 
-	err = godotenv.Load()
+	err = godotenv.LoadOpt()
 	if err != nil {
 		panic(err)
 	}
