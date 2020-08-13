@@ -3,6 +3,8 @@
 
 package api
 
+var Version = "dev"
+
 import (
 	"context"
 	"io"
