@@ -13,9 +13,12 @@ import (
 	"../../api"
 )
 
+var Version = "dev"
+
 func main() {
 	// log.SetFlags(log.LstdFlags | log.Lshortfile)
 
+	log.Info("Starting API version", Version)
 	// configurtion with viper
 	cfg := api.Configure(os.Args)
 

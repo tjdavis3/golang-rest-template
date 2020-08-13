@@ -3,8 +3,6 @@
 
 package api
 
-var Version = "dev"
-
 import (
 	"context"
 	"io"
@@ -21,6 +19,7 @@ import (
 	"github.com/rs/zerolog/hlog"
 	"github.com/rs/zerolog/log"
 )
+
 
 type server struct {
 	db         *interface{}
