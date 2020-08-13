@@ -1,5 +1,7 @@
 package main
 
+var Version = "dev"
+
 import (
 	"context"
 	"fmt"
