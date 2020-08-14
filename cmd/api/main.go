@@ -14,6 +14,7 @@ import (
 )
 
 var Version = "dev"
+var Service = "RESTAPI"
 
 func main() {
 	// log.SetFlags(log.LstdFlags | log.Lshortfile)
@@ -28,6 +29,7 @@ func main() {
 		log.Fatal(err)
 	}
 
+	api.InfoMetric.WithLabelValues(Service, Version).Inc()
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", cfg.Port),
 		Handler: s,
