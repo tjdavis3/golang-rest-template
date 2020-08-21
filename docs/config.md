@@ -16,3 +16,5 @@ Variable | Flag | Default | Description |
 SENTRY_DSN |  |  | DSN for sentry crash detection
 SENTRY_ENVIRONMENT |  |  | Environment to report to sentry
 PORT | -p,<br/> --port  | 8080  | HTTP Port on which to listen
+JWKS_RENEW_MINUTES | | 60 | Number of minutes between JWKS certificate renewals
+JWT_ISSUER | | | The URL to the JWT issuing server

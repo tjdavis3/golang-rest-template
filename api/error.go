@@ -39,6 +39,7 @@ func ErrNotFound(r *http.Request, err error) render.Renderer {
 func ErrUnauthorized(r *http.Request, err error) render.Renderer {
 	hlog.FromRequest(r).Error().Err(err).Send()
 	reqID, _ := hlog.IDFromRequest(r)
+
 	return &ErrResponse{
 		HTTPStatusCode: http.StatusUnauthorized,
 		Msg:            err.Error(),
@@ -66,9 +67,13 @@ func ErrorEncoder(ctx context.Context, err error, w http.ResponseWriter) {
 			}
 		}
 	}
+
 	code := http.StatusInternalServerError
 	if sc, ok := err.(openapi3filter.StatusCoder); ok {
 		code = sc.StatusCode()
+	}
+	if code == 401 {
+		w.Header().Add("WWW-Authenticate", "Bearer")
 	}
 	w.WriteHeader(code)
 	body, _ := json.Marshal(&ErrResponse{

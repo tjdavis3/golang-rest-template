@@ -5,6 +5,7 @@ package api
 
 import (
 	"context"
+	"errors"
 	"io"
 	"net/http"
 	"time"
@@ -19,7 +20,6 @@ import (
 	"github.com/rs/zerolog/hlog"
 	"github.com/rs/zerolog/log"
 )
-
 
 type server struct {
 	db         *interface{}
@@ -94,12 +94,14 @@ func NewServer(ctx context.Context, cfg *Cfg) (*server, error) {
 		r.Use(mwMetrics)
 		r.Use(Recoverer)
 
-		// r.Use(jwtMiddleware.Handler)
+		r.Use(s.JWTAuthentication)
 		r.Use(sentryHandler.Handle)
 		r.Use(EventEnhancer)
 		handler := HandlerFromMux(s, r)
 		r.Handle("/", handler)
 	})
+
+	r.HandleFunc("/", notFoundHandler)
 
 	// health check
 	r.HandleFunc("/ping", ping)
@@ -117,6 +119,10 @@ func spec(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	render.JSON(w, r, swagger)
+}
+
+func notFoundHandler(w http.ResponseWriter, r *http.Request) {
+	render.Render(w, r, ErrNotFound(r, errors.New("Not Found")))
 }
 
 // ping is handler responding to health-check request
