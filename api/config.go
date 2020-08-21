@@ -12,7 +12,9 @@ import (
 
 // Cfg configuration structure
 type Cfg struct {
-	Port int `env:"PORT,default=8080" short:"p" long:"port" description:"HTTP Port"`
+	Port                 int    `env:"PORT,default=8080" short:"p" long:"port" description:"HTTP Port"`
+	JwksCertRenewMinutes int    `env:"JWKS_RENEW_MINUTES,default=60" description:"Number of minutes to wait before renewing JWKS certificates"`
+	JWTIssuer            string `env:"JWT_ISSUER" description:"The URL to the JWT issuing server"`
 }
 
 // Config is the current application configuration

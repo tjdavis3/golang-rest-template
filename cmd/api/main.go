@@ -13,18 +13,31 @@ import (
 	"../../api"
 )
 
+var Version = "dev"
+var Service = "RESTAPI"
+
 func main() {
 	// log.SetFlags(log.LstdFlags | log.Lshortfile)
 
+	log.Info("Starting API version", Version)
 	// configurtion with viper
 	cfg := api.Configure(os.Args)
 
+	if issuer := cfg.JWTIssuer; issuer != "" {
+		// fetch JWT key set
+		err := api.FetchJWTKeySet(cfg)
+		if err != nil {
+			log.Fatal("failed to fetch JWT Key Set ", err)
+		}
+		api.RefreshJWTKS(cfg)
+	}
 	// create server instance
 	s, err := api.NewServer(context.Background(), cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	api.InfoMetric.WithLabelValues(Service, Version).Inc()
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", cfg.Port),
 		Handler: s,

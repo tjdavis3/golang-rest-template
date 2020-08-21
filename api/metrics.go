@@ -10,6 +10,11 @@ import (
 )
 
 var (
+	// InfoMetric contains system information
+	InfoMetric = prometheus.NewCounterVec(prometheus.CounterOpts{
+		Name: "api_info",
+		Help: "Information about the service",
+	}, []string{"service", "version"})
 	opsProcessing = promauto.NewGauge(prometheus.GaugeOpts{
 		Name: "api_processing_ops_total",
 		Help: "The number of events processing",
