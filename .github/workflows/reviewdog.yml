@@ -1,0 +1,38 @@
+name: reviewdog
+on: [pull_request]
+jobs:
+  staticcheck:
+    name: runner / staticcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: reviewdog/action-staticcheck@v1
+        with:
+          github_token: ${{ secrets.m5_github_token }}
+          # Change reviewdog reporter if you need [github-pr-check,github-check,github-pr-review].
+          reporter: github-pr-check
+          # Report all results.
+          filter_mode: nofilter
+          # Exit with 1 when it find at least one finding.
+          fail_on_error: true
+  golangci-lint:
+    name: runner / golangci-lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v1
+      - name: golangci-lint
+        uses: reviewdog/action-golangci-lint@v1
+ # Use golint via golangci-lint binary with "warning" level.
+  golint:
+    name: runner / golint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v1
+      - name: golint
+        uses: reviewdog/action-golangci-lint@v1
+        with:
+          golangci_lint_flags: "--disable-all -E golint"
+          tool_name: golint # Change reporter name.
+          level: warning # GitHub Status Check won't become failure with this level.
