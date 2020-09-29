@@ -29,7 +29,7 @@ type server struct {
 	root       http.Handler
 }
 
-func NewServer(ctx context.Context, cfg *Cfg) (*server, error) {
+func NewServer(ctx context.Context, cfg *config.Cfg) (*server, error) {
 	var err error
 
 	s := &server{
