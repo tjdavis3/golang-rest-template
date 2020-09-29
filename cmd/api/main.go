@@ -11,6 +11,7 @@ import (
 	log "github.com/magna5/go-logger"
 
 	"../../api"
+	"../../config"
 )
 
 var Version = "dev"
@@ -21,7 +22,7 @@ func main() {
 
 	log.Info("Starting API version", Version)
 	// configurtion with viper
-	cfg := api.Configure(os.Args)
+	cfg := config.Configure(os.Args)
 
 	if issuer := cfg.JWTIssuer; issuer != "" {
 		// fetch JWT key set

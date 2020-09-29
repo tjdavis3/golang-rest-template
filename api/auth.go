@@ -12,6 +12,7 @@ import (
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/rs/zerolog/log"
+        "../config"
 )
 
 // Jwks struct
@@ -32,7 +33,7 @@ type JSONWebKeys struct {
 var jwks = Jwks{}
 
 // RefreshJWTKS refreshes jwt key set from the server
-func RefreshJWTKS(cfg *Cfg) {
+func RefreshJWTKS(cfg *config.Cfg) {
 	refreshInterval := cfg.JwksCertRenewMinutes
 	if refreshInterval != 0 {
 		duration := time.Duration(refreshInterval) * time.Minute
@@ -57,7 +58,7 @@ func RefreshJWTKS(cfg *Cfg) {
 }
 
 // FetchJWTKeySet stores keycloak jwt key set
-func FetchJWTKeySet(cfg *Cfg) error {
+func FetchJWTKeySet(cfg *config.Cfg) error {
 	log.Info().Msg("Updating JWT Key set from the server...")
 	resp, err := http.Get(cfg.JWTIssuer + "/protocol/openid-connect/certs")
 

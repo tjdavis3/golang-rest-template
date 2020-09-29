@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"../models"
+	"../config"
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -24,7 +25,7 @@ import (
 type server struct {
 	db         *interface{}
 	httpClient *http.Client
-	config     *Cfg
+	config     *config.Cfg
 	root       http.Handler
 }
 
