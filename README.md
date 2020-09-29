@@ -11,10 +11,11 @@ This includes extremely simple boilerplate and example for
 - kubernetes deploy with kustomize
 - ...
 
+![Language: GO](https://img.shields.io/badge/language-golang-blue)
 
 Prerequisites
 ---
-For developments, you need to install these tools.
+For development, you need to install these tools.
 ```
 go get github.com/deepmap/oapi-codegen/cmd/oapi-codegen
 ```
@@ -91,10 +92,33 @@ Here are the libraries I chose. Some of them are relatively new and may not be m
 - **Metrics.** - [Prometheus](https://github.com/prometheus/client_golang)  
   It is extremely easy to add custom metrics to your server, check [api/metrics.go](api/metrics.go).
 
-# Documentation
+[//]: # (Remove everything from this line to the top and edit the text below)
+
+# Project: A new Project
+
+A short description of the project needs to go here.
+
+![Language: GO](https://img.shields.io/badge/language-golang-blue)
+
+## Getting Started
+
+### Prerequisites
+
+oapi-codegen is used to keep the code up to date with the openapi specification.
+
+```
+go get github.com/deepmap/oapi-codegen/cmd/oapi-codegen
+```
+
+### Installation
+
+## Useage
+
+## Acknowledgements
+
+## Documentation
 
 * [Overview](docs/README.md)
 * [Configuration](docs/config.md)
 * [Metrics](docs/metrics.md)
 * [API Overview](docs/api/README.md)
-

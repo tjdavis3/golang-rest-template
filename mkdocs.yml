@@ -11,3 +11,12 @@ nav:
     - Browseable API: api/api.html
 
 theme: windmill
+plugins:
+  - search
+  - build_plantuml:
+      render: local
+      diagram_root: docs/diagrams
+      output_folder: images
+      input_folder: .
+      input_extensions: puml
+
