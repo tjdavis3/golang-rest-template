@@ -1,0 +1,26 @@
+title: REST API
+src_dir: docs
+chapters:
+  - "Overview": README.md
+  - "Configuration": config.md
+  - "Metrics": metrics.md
+  - "API":
+    - api/README.md
+    - "Response Codes": api/errors.md
+    - "Getting Started": api/getting_started.md
+    - "Browseable API": api/api.html
+
+backend_config:
+  mkdocs:
+    mkdocs.yml: !include mkdocs.yml
+  pandoc:
+    params:
+      pdf_engine: wkhtmltopdf
+preprocessors:
+  - swaggerdoc:
+    spec_path: spec/openapi.yaml
+  # - dbmldoc:
+  #   spec_path: db.dbml
+  - plantuml:
+      cache_dir: !path .diagramscache
+      parse_raw: true
