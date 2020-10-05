@@ -18,9 +18,9 @@ backend_config:
       pdf_engine: wkhtmltopdf
 preprocessors:
   - swaggerdoc:
-    spec_path: spec/openapi.yaml
+      spec_path: spec/openapi.yaml
   # - dbmldoc:
-  #   spec_path: db.dbml
+  #     spec_path: db.dbml
   - plantuml:
       cache_dir: !path .diagramscache
       parse_raw: true
