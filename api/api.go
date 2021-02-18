@@ -10,8 +10,8 @@ import (
 	"net/http"
 	"time"
 
-	"../models"
 	"../config"
+	"../models"
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -107,6 +107,7 @@ func NewServer(ctx context.Context, cfg *config.Cfg) (*server, error) {
 	// health check
 	r.HandleFunc("/ping", ping)
 	r.HandleFunc("/openapi.json", spec)
+	r.HandleFunc("/docs", apidocs)
 
 	s.root = r
 
@@ -120,6 +121,26 @@ func spec(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	render.JSON(w, r, swagger)
+}
+
+func apidocs(w http.ResponseWriter, r *http.Request) {
+	html := `
+<!doctype html> <!-- Important: must specify -->
+<html>
+<head>
+  <meta charset="utf-8"> <!-- Important: rapi-doc uses utf8 charecters -->
+  <script type="module" src="https://unpkg.com/rapidoc/dist/rapidoc-min.js"></script>
+</head>
+<body>
+</dl>
+  <rapi-doc
+    spec-url = "openapi.json"
+    show-header = 'false'
+  > </rapi-doc>
+</body>
+</html>
+`
+	render.HTML(w, r, html)
 }
 
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {
