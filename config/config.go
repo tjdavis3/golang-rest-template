@@ -1,3 +1,4 @@
+//go:generate go run ../cmd/configdoc/main.go -o ../docs/config.md
 package config
 
 import (
