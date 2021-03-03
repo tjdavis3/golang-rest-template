@@ -23,7 +23,7 @@ import (
 )
 
 type server struct {
-	db         *interface{}
+	db         models.Datastore
 	httpClient *http.Client
 	config     *config.Cfg
 	root       http.Handler
@@ -40,7 +40,7 @@ func NewServer(ctx context.Context, cfg *config.Cfg) (*server, error) {
 	log.Logger = log.Logger.With().Timestamp().Caller().Logger()
 
 	// db
-	s.db, err = models.InitializeDB(s.config)
+	s.db, err = models.Initialize(s.config)
 	if err != nil {
 		return nil, err
 	}
