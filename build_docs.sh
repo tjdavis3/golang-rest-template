@@ -1,7 +1,7 @@
 [ -d .diagramscache ] || mkdir .diagramscache
 TMPFILE=build.$$
 echo "#!/bin/sh" > $TMPFILE
-echo "cp spec/openapi.yaml docs" >> $TMPFILE
+echo "cp spec/openapi.yaml docs mkdocs-awesome-pages-plugin" >> $TMPFILE
 echo "pip install mkdocs-windmill mkdocs-awesome-pages-plugin " >> $TMPFILE
 echo "foliant make -w mkdocs site" >> $TMPFILE
 chmod +x $TMPFILE

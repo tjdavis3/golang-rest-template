@@ -9,11 +9,12 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"net/http"
+	"strings"
+
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi"
-	"net/http"
-	"strings"
 )
 
 // ErrResponse defines model for ErrResponse.
@@ -39,56 +40,96 @@ type GetTestParams struct {
 	Id int `json:"id"`
 }
 
+// ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// Test (GET /test)
-	GetTest(w http.ResponseWriter, r *http.Request)
+	// Test
+	// (GET /test)
+	GetTest(w http.ResponseWriter, r *http.Request, params GetTestParams)
 }
 
-// ParamsForGetTest operation parameters from context
-func ParamsForGetTest(ctx context.Context) *GetTestParams {
-	return ctx.Value("GetTestParams").(*GetTestParams)
+// ServerInterfaceWrapper converts contexts to parameters.
+type ServerInterfaceWrapper struct {
+	Handler            ServerInterface
+	HandlerMiddlewares []MiddlewareFunc
 }
+
+type MiddlewareFunc func(http.HandlerFunc) http.HandlerFunc
 
 // GetTest operation middleware
-func GetTestCtx(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
+func (siw *ServerInterfaceWrapper) GetTest(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 
-		var err error
+	var err error
 
-		// Parameter object where we will unmarshal all parameters from the context
-		var params GetTestParams
+	ctx = context.WithValue(ctx, "JWT.Scopes", []string{"exec_test"})
 
-		// ------------- Required query parameter "id" -------------
-		if paramValue := r.URL.Query().Get("id"); paramValue != "" {
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetTestParams
 
-		} else {
-			http.Error(w, "Query argument id is required, but not found", http.StatusBadRequest)
-			return
-		}
+	// ------------- Required query parameter "id" -------------
+	if paramValue := r.URL.Query().Get("id"); paramValue != "" {
 
-		err = runtime.BindQueryParameter("form", true, true, "id", r.URL.Query(), &params.Id)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid format for parameter id: %s", err), http.StatusBadRequest)
-			return
-		}
+	} else {
+		http.Error(w, "Query argument id is required, but not found", http.StatusBadRequest)
+		return
+	}
 
-		ctx = context.WithValue(ctx, "GetTestParams", &params)
+	err = runtime.BindQueryParameter("form", true, true, "id", r.URL.Query(), &params.Id)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter id: %s", err), http.StatusBadRequest)
+		return
+	}
 
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
+	var handler = func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetTest(w, r, params)
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler(w, r.WithContext(ctx))
 }
 
 // Handler creates http.Handler with routing matching OpenAPI spec.
 func Handler(si ServerInterface) http.Handler {
-	return HandlerFromMux(si, chi.NewRouter())
+	return HandlerWithOptions(si, ChiServerOptions{})
+}
+
+type ChiServerOptions struct {
+	BaseURL     string
+	BaseRouter  chi.Router
+	Middlewares []MiddlewareFunc
 }
 
 // HandlerFromMux creates http.Handler with routing matching OpenAPI spec based on the provided mux.
 func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
+	return HandlerWithOptions(si, ChiServerOptions{
+		BaseRouter: r,
+	})
+}
+
+func HandlerFromMuxWithBaseURL(si ServerInterface, r chi.Router, baseURL string) http.Handler {
+	return HandlerWithOptions(si, ChiServerOptions{
+		BaseURL:    baseURL,
+		BaseRouter: r,
+	})
+}
+
+// HandlerWithOptions creates http.Handler with additional options
+func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handler {
+	r := options.BaseRouter
+
+	if r == nil {
+		r = chi.NewRouter()
+	}
+	wrapper := ServerInterfaceWrapper{
+		Handler:            si,
+		HandlerMiddlewares: options.Middlewares,
+	}
+
 	r.Group(func(r chi.Router) {
-		r.Use(GetTestCtx)
-		r.Get("/test", si.GetTest)
+		r.Get(options.BaseURL+"/test", wrapper.GetTest)
 	})
 
 	return r
@@ -97,14 +138,15 @@ func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/2xTTW/bMAz9KwK3o1AHG3bRbdiCLYcBRetb0YMms466WFJJelgQ+L8PlBO3zcclEj+e",
-	"Hh+fDxDyUHLCJAzuAIRccmKslzVRJj2EnAST6NGXsovBS8ypeeacNMZhi4PX00fCJ3DwoXlFbeYsN2ui",
-	"uyM6TPqzx8bTW0vWHaBDDhSLPgNuJmJO3MBCoVyQJM48f7bt7b14Gflb7q60t1s0WrMgmKB1FmRfEBzE",
-	"JNgjwWRh4P56/4DMvkeD/8rOxxRTb2SLBqtECxILxdQrEOHLiCyb79fhjmkTOyPZCPnwZ8biS7AjWiTs",
-	"wD1Uim/x7fn8jwtC/v2MQaBqHdNTvuRyt75vzdfbDVjYxYBH9ZMftP3XptVRJMpOr3PZXySee1c3q5uV",
-	"FuSCyZcIDj7XkIXiZVtX0why9U2P9U/XVs2z6cDBD5RW89pAfkBBYnAP5ySLZzY+mdiBzgEOXkakPdgT",
-	"0Zp41UhoRPvGledrnh7te6N/Wq0upeExBGTWAb/M+WvuXnCa+Wupth6HwdNeV63TvYuoHkbFmqbpfwAA",
-	"AP//8ZooL30DAAA=",
+	"H4sIAAAAAAAC/2yT32vbMBDH/xVx26Opw8Ze/Da2sGWsUBrDHkIYqnx11MWSenceDcH/+zjZdbMkT5bv",
+	"x0f63o8juNilGDAIQ3UEQk4xMOafJVEkPbgYBIPo0aa0986Kj6F84hjUxm6HndXTe8JHqOBd+UYtRy+X",
+	"S6L7iQ7DMBTQIDvySVFQAahpip0un8Or41lwfpl5fSwUkCgmJPHjw7/X9d1arPT8JTZX0usdGo2ZCcZp",
+	"XAFySAgV+CDYIsFQQMft9fwOmW2LBl/S3vrgQ2tkhwZzzWYSC/nQKojwuUeW1dfruMltfGMkGiHr/ows",
+	"voRNNE/YQLXJTzzlF+f6tzMhPjyhk7HU6Hryclhrycey/fhVz+3U6Ae0hCdidiJpbJ0Pj/FSx/1yXZvP",
+	"dysoYO8dTp0LNsNuV7X5OVkL6Gk/Abkqy5gwcOzJ4U2ktpySubxd1Vo68bJXxIj+i8TjfYubxc1CAzTf",
+	"Jg8VfMymApKVXdZUCnIe3BbzR8ckT++qgQq+odTq1wSyHQoSQ7U5F5Yss7HB+AZUO1Tw3CMdoHgVlx1v",
+	"PRHqsThZi/OxGrbF/5v2YbG4LCf3ziGzCvw0+q+t18wpx3U97W2Wkru6AXxB9zsXY6vXc991lg46fWob",
+	"Ti0aZbSewzD8CwAA///dO90+IQQAAA==",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code

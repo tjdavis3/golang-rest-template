@@ -11,10 +11,10 @@ The order of preference is:
 
 ## Configuration Variables and Flags
 
-Variable | Flag | Default | Description |
--------  | ---- | ------- | -----------
-SENTRY_DSN |  |  | DSN for sentry crash detection
-SENTRY_ENVIRONMENT |  |  | Environment to report to sentry
-PORT | -p,<br/> --port  | 8080  | HTTP Port on which to listen
-JWKS_RENEW_MINUTES | | 60 | Number of minutes between JWKS certificate renewals
-JWT_ISSUER | | | The URL to the JWT issuing server
+| Variable           | Flag            | Type | Default | Description                                                         |
+| ------------------ | --------------- | ---- | ------- | ------------------------------------------------------------------- |
+| SENTRY_DSN | | string |  | DSN for sentry crash detection |
+| SENTRY_ENVIRONMENT | | string |  | Environment to report to sentry |
+| PORT | -p<br/>--port | int | 8080 | HTTP Port |
+| JWKS_RENEW_MINUTES |  | int | 60 | Number of minutes to wait before renewing JWKS certificates |
+| JWT_ISSUER |  | string |  | The URL to the JWT issuing server |
