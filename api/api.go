@@ -1,4 +1,4 @@
-//go:generate oapi-codegen --package=api --generate types,chi-server,spec -o api.gen.go ../spec/openapi.yaml
+//go:generate go run github.com/deepmap/oapi-codegen/cmd/oapi-codegen --package=api --generate types,chi-server,spec -o api.gen.go ../spec/openapi.yaml
 //go:generate go run ../cmd/updImpl.go
 
 package api
