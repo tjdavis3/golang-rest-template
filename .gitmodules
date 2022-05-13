@@ -1,0 +1,6 @@
+[submodule "docs/themes/docsy"]
+	path = docs/themes/docsy
+	url = https://github.com/google/docsy.git
+[submodule "docs/layouts"]
+	path = docs/layouts
+	url = https://github.com/ringsq/hugolayouts

@@ -1,46 +1,41 @@
 package api
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
+	"github.com/getkin/kin-openapi/routers"
+	legacyrouter "github.com/getkin/kin-openapi/routers/legacy"
 )
-
-type AuthenticationFunc func(context.Context, *openapi3filter.AuthenticationInput) error
-
-func NoopAuthenticationFunc(context.Context, *openapi3filter.AuthenticationInput) error { return nil }
-
-var _ AuthenticationFunc = NoopAuthenticationFunc
 
 type ValidationHandler struct {
 	Handler            http.Handler
-	AuthenticationFunc AuthenticationFunc
-	Swagger            *openapi3.Swagger
+	AuthenticationFunc openapi3filter.AuthenticationFunc
+	Swagger            *openapi3.T
 	ErrorEncoder       openapi3filter.ErrorEncoder
-	router             *openapi3filter.Router
+	router             routers.Router
 }
 
-func NewValidationHandler(handler http.Handler, swagger *openapi3.Swagger) (*ValidationHandler, error) {
+func NewValidationHandler(handler http.Handler, swagger *openapi3.T) (*ValidationHandler, error) {
 	vh := &ValidationHandler{Handler: handler, Swagger: swagger}
 	err := vh.Load()
 	return vh, err
 }
 
 func (h *ValidationHandler) Load() error {
-	h.router = openapi3filter.NewRouter()
-
-	if err := h.router.AddSwagger(h.Swagger); err != nil {
+	router, err := legacyrouter.NewRouter(h.Swagger)
+	if err != nil {
 		return err
 	}
 
+	h.router = router
 	// set defaults
 	if h.Handler == nil {
 		h.Handler = http.DefaultServeMux
 	}
 	if h.AuthenticationFunc == nil {
-		h.AuthenticationFunc = NoopAuthenticationFunc
+		h.AuthenticationFunc = openapi3filter.NoopAuthenticationFunc
 	}
 	if h.ErrorEncoder == nil {
 		encoder := &openapi3filter.ValidationErrorEncoder{Encoder: (openapi3filter.ErrorEncoder)(ErrorEncoder)}
@@ -79,7 +74,7 @@ func (h *ValidationHandler) before(w http.ResponseWriter, r *http.Request) (hand
 
 func (h *ValidationHandler) validateRequest(r *http.Request) error {
 	// Find route
-	route, pathParams, err := h.router.FindRoute(r.Method, r.URL)
+	route, pathParams, err := h.router.FindRoute(r)
 	if err != nil {
 		return err
 	}

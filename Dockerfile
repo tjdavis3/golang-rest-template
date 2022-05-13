@@ -1,4 +1,4 @@
-FROM golang:1.13.7-buster
+FROM golang:1.17
 WORKDIR /app
 
 COPY go.mod .

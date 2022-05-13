@@ -1,4 +1,12 @@
-## Configuration
+---
+title: Appendix A - Configuration
+linkTitle: "A: Configuration"
+weight: 20
+draft: false
+---
+
+<!-- config:embed:start -->
+# Configuration
 
 Configuration is typically done with environment variables or command-line flags.  Not all settings have command-line flags or default values.  If there's no value set the feature is disabled.  
 
@@ -15,11 +23,8 @@ The order of preference is:
 | ------------------ | --------------- | ---- | ------- | ------------------------------------------------------------------- |
 | SENTRY_DSN | | string |  | DSN for sentry crash detection |
 | SENTRY_ENVIRONMENT | | string |  | Environment to report to sentry |
-{{- range $field := .Fields }}
-{{- $short := $field.Tag.Get "short" }}
-{{- $long := $field.Tag.Get "long" }}
-{{- $variable := $field.Tag.Get "env" }}
-{{- if gt (len $variable) 0 }}
-| {{ $variable }} | {{ if gt (len $short) 0 }}-{{ end }}{{ $short }}{{ if gt (len $long) 0 }}<br/>--{{ end }}{{ $long }} | {{ .Type.String }} | {{ $field.Tag.Get "default" }} | {{ $field.Tag.Get "description" }} |
-{{- end }}
-{{- end }}
+| PORT | -p<br/>--port | int | 8080 | HTTP Port |
+| JWKS_RENEW_MINUTES |  | int | 60 | Number of minutes to wait before renewing JWKS certificates |
+| JWT_ISSUER |  | string |  | The URL to the JWT issuing server |
+
+<!-- config:embed:end -->

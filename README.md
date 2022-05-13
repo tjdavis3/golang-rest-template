@@ -7,22 +7,29 @@ This includes extremely simple boilerplate and example for
 - access control
 - metrics
 - graceful shutdown
-- configuration through flag, env. (no files, but viper also can load configuration from files)
+- configuration through flag, env. 
 - kubernetes deploy with kustomize
 - ...
 
 ![Language: GO](https://img.shields.io/badge/language-golang-blue)
 
-Prerequisites
----
-For development, you need to install these tools.
-```
-go get github.com/deepmap/oapi-codegen/cmd/oapi-codegen
-```
 
 Usage
 ---
-- ```go mod init```
+- Create a new repo from this template
+- Initialize the new repo
+```bash
+./initialize.sh {module}
+```
+eg. 
+```bash
+./initialize.sh github.com/ringsq/newrepo
+```
+You can then remove intialize.sh
+```bash
+git rm initialize.sh
+```
+
 - **Write Spec**
 - ```go generate ./...```
 - Add metrics definitions to api/metrics.go
@@ -61,36 +68,6 @@ Structure
 
 ```
 
-Libraries
----
-Here are the libraries I chose. Some of them are relatively new and may not be mature compared to the competitors. I had to make multiple patches to the listed library to satisfy my use cases. But at least for me, they really helped me to simplify the process. Hope they all have more users and contributors.
-
-- **Openapi integration for documents, client/server codegen.** [oapi-codegen](https://github.com/deepmap/oapi-codegen), [kin-openapi](https://github.com/getkin/kin-openapi)  
-  API service is meaningless without document. But managing documents and code separately gets really messy when your service grows.  
-
-  "OpenAPI Specification" defines the standard way to manage your REST API service.
-  Instead of writing code first, write openapi spec(which is extremely simple) with [APIcur.IO](https://apicur.io/) first and verify your api. Then, generate code from spec. For client code generation, you can use [openapi-generator](https://github.com/OpenAPITools/openapi-generator).
-
-- **Web Framework.** net/http with [chi](https://github.com/go-chi/chi)  
-   chi has 100% compatibility with net/http. gorilla/mux is more famous for this but, as oapi-codegen only supports chi, I just use chi.
-
-  If you use standard net/http handler, It is extremely simple to integrate with third party middlewares like [rs/cors](https://github.com/rs/cors), [zerolog](https://github.com/rs/zerolog).
-
-
-- **Contextual, structured logging.** [zerolog](https://github.com/rs/zerolog)  
-  zerolog offers simplest api. It also offers helper library(hlog) that can be used with standard ```http.Handler```, and ```context.Context``` integration is amazing.
-  ```
-  ctx := log.With().Str("component", "module").Logger().WithContext(ctx)
-
-  // ... somewhere in your function with context
-  log.Ctx(ctx).Info().Msg("hello world")
-  // Output: {"component":"module","level":"info","message":"hello world"}
-  ```
-
-- **Configuration.** [spf13/viper](https://github.com/spf13/viper)  
-
-- **Metrics.** - [Prometheus](https://github.com/prometheus/client_golang)  
-  It is extremely easy to add custom metrics to your server, check [api/metrics.go](api/metrics.go).
 
 [//]: # (Remove everything from this line to the top and edit the text below)
 
@@ -112,13 +89,13 @@ go get github.com/deepmap/oapi-codegen/cmd/oapi-codegen
 
 ### Installation
 
+
 ## Useage
 
-## Acknowledgements
 
 ## Documentation
 
 * [Overview](docs/README.md)
-* [Configuration](docs/config.md)
 * [Metrics](docs/metrics.md)
 * [API Overview](docs/api/README.md)
+
