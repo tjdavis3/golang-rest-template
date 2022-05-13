@@ -10,8 +10,9 @@ import (
 
 	log "github.com/ringsq/go-logger"
 
-	"../../api"
-	"../../config"
+	"boilerplate/api"
+	"boilerplate/config"
+	"boilerplate/metrics"
 )
 
 var Version = "dev"
@@ -38,7 +39,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	api.InfoMetric.WithLabelValues(Service, Version).Inc()
+	metrics.InfoMetric.WithLabelValues(Service, Version).Inc()
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", cfg.Port),
 		Handler: s,

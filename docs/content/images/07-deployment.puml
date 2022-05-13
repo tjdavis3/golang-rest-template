@@ -1,0 +1,45 @@
+@startuml
+
+title Deployment
+
+!include https://raw.githubusercontent.com/adrianvlupu/C4-PlantUML/latest/C4_Deployment.puml
+
+LAYOUT_WITH_LEGEND()
+
+Deployment_Node(plc, "Company", "Company data center"){
+    Deployment_Node(dn, "application-api***\tx2", "CentOS 8"){
+        Deployment_Node(apache, "Apache Tomcat", "Apache Tomcat 8.x"){
+            Container(api, "API Application", "Java and Spring MVC", "Provides Internet Banking functionality via a JSON/HTTPS API.")
+        }
+    }
+    Deployment_Node(companydb01, "company-db01", "Ubuntu 16.04 LTS"){
+        Deployment_Node(oracle, "PostgreSQL - Primary", "PostgreSQL 12"){
+            ContainerDb(db, "Database", "Relational Database Schema", "Stores user registration information, hashed authentication credentials, access logs, etc.")
+        }
+    }
+    Deployment_Node(companydb02, "company-db02", "Ubuntu 16.04 LTS"){
+        Deployment_Node(oracle2, "PostgreSQL - Secondary", "PostgreSQL 12"){
+            ContainerDb(db2, "Database", "Relational Database Schema", "Stores user registration information, hashed authentication credentials, access logs, etc.")
+        }
+    }
+    Deployment_Node(bb2, "company-web***\tx4", "Ubuntu 16.04 LTS"){
+        Deployment_Node(apache2, "Apache Tomcat", "Apache Tomcat 8.x"){
+            Container(web, "Web Application", "Java and Spring MVC", "Delivers the static content and the Internet Banking single page application.")
+        }
+    }
+}
+
+
+Deployment_Node(comp, "Customer's computer", "Mircosoft Windows of Apple macOS"){
+    Deployment_Node(browser, "Web Browser", "Google Chrome, Mozilla Firefox"){
+        Container(spa, "Single Page Application", "JavaScript and Angular", "Provides all of the Internet Banking functionality to customers via their web browser.")
+    }
+}
+
+Rel_D(spa, api, "Makes API calls to", "json/HTTPS")
+Rel_U(web, spa, "Delivers to the customer's web browser")
+Rel(api, db, "Reads from and writes to", "JDBC")
+Rel(api, db2, "Reads from and writes to", "JDBC")
+Rel_R(db, db2, "Replicates data to")
+
+@enduml

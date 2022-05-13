@@ -10,11 +10,13 @@ import (
 	"net/http"
 	"time"
 
-	"../config"
-	"../models"
+	"boilerplate/config"
+	"boilerplate/metrics"
+	"boilerplate/models"
+
 	sentryhttp "github.com/getsentry/sentry-go/http"
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog"
@@ -92,10 +94,10 @@ func NewServer(ctx context.Context, cfg *config.Cfg) (*server, error) {
 		r.Use(hlog.RemoteAddrHandler("ip"))
 		r.Use(hlog.UserAgentHandler("user_agent"))
 		r.Use(hlog.RefererHandler("referer"))
-		r.Use(mwMetrics)
+		r.Use(metrics.Middleware)
 		r.Use(Recoverer)
 
-		r.Use(s.JWTAuthentication)
+		r.Use(s.Authentication)
 		r.Use(sentryHandler.Handle)
 		r.Use(EventEnhancer)
 		handler := HandlerFromMux(s, r)

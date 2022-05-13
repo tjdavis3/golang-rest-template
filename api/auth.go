@@ -9,10 +9,11 @@ import (
 	"syscall"
 	"time"
 
+	"boilerplate/config"
+
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/form3tech-oss/jwt-go"
 	"github.com/rs/zerolog/log"
-        "../config"
 )
 
 // Jwks struct
@@ -82,7 +83,7 @@ func FetchJWTKeySet(cfg *config.Cfg) error {
 }
 
 // JWTAuthentication middleware
-func (s *server) JWTAuthentication(next http.Handler) http.Handler {
+func (s *server) Authentication(next http.Handler) http.Handler {
 	fn := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		issuer := s.config.JWTIssuer
 
@@ -117,7 +118,6 @@ func (s *server) JWTAuthentication(next http.Handler) http.Handler {
 				return
 			}
 		}
-
 		next.ServeHTTP(w, r)
 	})
 

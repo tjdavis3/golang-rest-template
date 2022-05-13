@@ -1,4 +1,4 @@
-//go:generate go run ../cmd/configdoc/main.go -o ../docs/config.md
+//go:generate go run ../cmd/configdoc/main.go -o ../docs/content/A_config.md
 package config
 
 import (
