@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	log "github.com/magna5/go-logger"
-	"github.com/magna5/go-logger/shims/zerolog"
+	log "github.com/ringsq/go-logger"
+	"github.com/ringsq/go-logger/shims/zerolog"
 
 	sentry "github.com/getsentry/sentry-go"
 	flags "github.com/jessevdk/go-flags"
