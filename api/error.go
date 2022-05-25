@@ -105,3 +105,21 @@ func JWTErrorHandler(w http.ResponseWriter, r *http.Request, err string) {
 	ErrorEncoder(ctx, jerr, w)
 	return
 }
+
+type BadRequestError struct {
+	Status int
+	Msg    string
+}
+
+func (br BadRequestError) Error() string {
+	return br.Msg
+}
+func (br BadRequestError) StatusCode() int {
+	return br.Status
+}
+
+// BadRequestErrorHandler - used by the server handler for bad requests due to invalid parameters
+func BadRequestErrorHandler(w http.ResponseWriter, r *http.Request, err error) {
+	test := BadRequestError{Msg: err.Error(), Status: http.StatusBadRequest}
+	ErrorEncoder(r.Context(), test, w)
+}

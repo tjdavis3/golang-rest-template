@@ -100,7 +100,8 @@ func NewServer(ctx context.Context, cfg *config.Cfg) (*server, error) {
 		r.Use(s.Authentication)
 		r.Use(sentryHandler.Handle)
 		r.Use(EventEnhancer)
-		handler := HandlerFromMux(s, r)
+		cso := ChiServerOptions{BaseRouter: r, ErrorHandlerFunc: BadRequestErrorHandler}
+		handler := HandlerWithOptions(s, cso)
 		r.Handle("/", handler)
 	})
 
