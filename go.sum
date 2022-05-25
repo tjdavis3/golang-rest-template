@@ -387,6 +387,10 @@ github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.7.1 h1:5TQK59W5E3v0r2duFAb7P95B6hEeOyEnHRa8MjYSMTY=
 github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
+github.com/tjdavis3/problems v0.0.0-20220525185619-31f0883d4877 h1:473J9r2YNvvGH5PLKoGPiKoM5M/Ewg5MngWxWvKOI2Y=
+github.com/tjdavis3/problems v0.0.0-20220525185619-31f0883d4877/go.mod h1:PTle8SkkLmaCXZU3UlmZ4lMoL5+6W+F4N9hoV+n/Ubs=
+github.com/tjdavis3/problems v0.0.0-20220525190748-a08edbecb139 h1:xUBNc+243PEr6LxprTHb9N3dl4REe7nTJWH9e1GtsIc=
+github.com/tjdavis3/problems v0.0.0-20220525190748-a08edbecb139/go.mod h1:PTle8SkkLmaCXZU3UlmZ4lMoL5+6W+F4N9hoV+n/Ubs=
 github.com/ugorji/go v1.1.7/go.mod h1:kZn38zHttfInRq0xu/PH0az30d+z6vm202qpg1oXVMw=
 github.com/ugorji/go v1.2.7/go.mod h1:nF9osbDWLy6bDVv/Rtoh6QgnvNDpmCalQV5urGCCS6M=
 github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8/go.mod h1:VFNgLljTbGfSG7qAOspJ7OScBnGdDN/yBr0sguwnwf0=

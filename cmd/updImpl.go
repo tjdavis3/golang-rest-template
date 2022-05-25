@@ -18,7 +18,7 @@ import (
 
 const funcBody = `
 func (s *server) %s%s {
-	err := &ErrResponse{HTTPStatusCode: http.StatusNotImplemented}
+	err := buildProblemFromError(http.StatusNotImplemented, errNotImplemented, r)
 	err.Render(w, r)
 }
 `

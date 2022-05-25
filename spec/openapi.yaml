@@ -32,20 +32,30 @@ components:
         ErrResponse:
             description: Error response
             required:
-                - msg
-                - requestID
-                - HTTPStatusCode
+                - detail
+                - status
+                - type
             type: object
             properties:
-                msg:
+                detail:
                     description: The message explaining the error
                     type: string
-                requestID:
+                request-id:
                     description: The request id to track errors
                     type: string
-                HTTPStatusCode:
+                status:
                     description: The HTTP response code
                     type: integer
+                instance:
+                    description: Indicates the instance (path) that generated the error
+                    type: string
+                title:
+                    description: Title of the error.  Defaults to the standard HTTP text for the status
+                    type: string
+                type:
+                    description: The type indicator for the error
+                    type: string
+
     responses:
         Error:
             content:

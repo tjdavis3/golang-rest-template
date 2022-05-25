@@ -15,4 +15,5 @@ require (
 	github.com/prometheus/client_golang v1.12.2
 	github.com/ringsq/go-logger v1.99.3
 	github.com/rs/zerolog v1.26.1
+	github.com/tjdavis3/problems v0.0.0-20220525190748-a08edbecb139 // indirect
 )
