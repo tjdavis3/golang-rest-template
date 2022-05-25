@@ -6,7 +6,8 @@ draft: false
 ---
 
 <!-- config:embed:start -->
-# Configuration
+
+## Configuration
 
 Configuration is typically done with environment variables or command-line flags.  Not all settings have command-line flags or default values.  If there's no value set the feature is disabled.  
 
@@ -26,5 +27,6 @@ The order of preference is:
 | PORT | -p<br/>--port | int | 8080 | HTTP Port |
 | JWKS_RENEW_MINUTES |  | int | 60 | Number of minutes to wait before renewing JWKS certificates |
 | JWT_ISSUER |  | string |  | The URL to the JWT issuing server |
+
 
 <!-- config:embed:end -->
