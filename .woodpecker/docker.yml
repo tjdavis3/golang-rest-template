@@ -1,0 +1,115 @@
+depends_on:
+  - test
+
+
+# variables:
+#  - &golang_image 'golang:1.18'
+
+clone:
+  git:
+    image: woodpeckerci/plugin-git
+    when:
+      event: 
+        - pull_request
+        - deployment
+        - tag
+
+pipeline:
+  dependencies:
+    image: golang:1.18
+    commands:
+      - go mod vendor
+    when:
+      event: pull_request
+
+  publish-PR-container:
+    image: plugins/docker
+    group: docker
+    settings:
+      dry_run: false
+      repo: ghcr.io/${CI_REPO}
+      registry: ghcr.io
+      dockerfile: Dockerfile
+      platforms: linux/amd64
+      build_args:
+        - VERSION=PR-${CI_COMMIT_PULL_REQUEST=${CI_COMMIT_SHA:0:6}}
+        - SERVICE=${CI_REPO_NAME}
+        - GITHUB_LOGIN=${GITHUB_USERNAME}
+        - GITHUB_PASSWORD=${GITHUB_TOKEN}
+      username:
+        from_secret: github_username
+      password: 
+        from_secret: github_token
+      tags: 
+        - ${CI_COMMIT_SHA:0:6}
+        - PR-${CI_COMMIT_PULL_REQUEST}
+    when:
+      event: pull_request
+
+  publish-release:
+    image: plugins/docker
+    group: docker
+    settings:
+      dry_run: false
+      repo: ghcr.io/${CI_REPO}
+      registry: ghcr.io
+      dockerfile: Dockerfile
+      platforms: linux/amd64
+      build_args:
+        - VERSION=${CI_COMMIT_TAG##v}
+        - SERVICE=${CI_REPO_NAME}
+        - GITHUB_LOGIN=${GITHUB_USERNAME}
+        - GITHUB_PASSWORD=${GITHUB_TOKEN}
+      username:
+        from_secret: github_username
+      password: 
+        from_secret: github_token
+      tags: 
+        - ${CI_COMMIT_SHA:0:6}
+        - ${CI_COMMIT_TAG##v}
+        - latest
+    when:
+      event: 
+        - tag
+
+
+  # publish-next-server-alpine:
+  #   image: woodpeckerci/plugin-docker-buildx
+  #   group: docker
+  #   secrets: [ docker_username, docker_password ]
+  #   settings:
+  #     repo: woodpeckerci/woodpecker-server
+  #     dockerfile: Dockerfile
+  #     platforms: linux/amd64
+  #     tag: next-alpine
+  #   when:
+  #     branch: ${CI_REPO_DEFAULT_BRANCH}
+  #     event: push
+
+  # publish-release-branch-server-alpine:
+  #   image: woodpeckerci/plugin-docker-buildx
+  #   group: docker
+  #   secrets: [ docker_username, docker_password ]
+  #   settings:
+  #     repo: woodpeckerci/woodpecker-server
+  #     dockerfile: Dockerfile
+  #     platforms: linux/amd64
+  #     tag: ${CI_COMMIT_BRANCH##release/}
+  #   when:
+  #     branch: release/*
+  #     event: deployment # push
+
+  # release-server-alpine:
+  #   group: docker
+  #   image: woodpeckerci/plugin-docker-buildx
+  #   secrets: [ docker_username, docker_password ]
+  #   settings:
+  #     repo: woodpeckerci/woodpecker-server
+  #     dockerfile: Dockerfile
+  #     platforms: linux/amd64
+  #     # remove 'latest-alpine' on older version branches to avoid accidental downgrade
+  #     tag: [latest-alpine, "${CI_COMMIT_TAG##v}-alpine"]
+  #   when:
+  #     event: deployment # tag
+
+  

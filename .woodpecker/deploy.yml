@@ -1,0 +1,11 @@
+depends_on:
+  - docker
+
+
+pipeline:
+  deploy-production:
+    image: alpine
+    commands:
+      - echo Deploy ${CI_COMMIT_SHA:0:6} to ${CI_BUILD_DEPLOY_TARGET}
+    when:
+      event: deployment

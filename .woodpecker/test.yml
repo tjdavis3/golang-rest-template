@@ -1,0 +1,39 @@
+variables:
+  - &golang_image 'golang:1.18'
+  - &when_path
+      # related config files
+      - ".woodpecker/test.yml"
+      # go source code
+      - "**/*.go"
+      - "go.*"
+ 
+pipeline:
+  lint-pipeline:
+    image: *golang_image
+    commands:
+      - go get github.com/woodpecker-ci/woodpecker/cmd/cli
+      - go run github.com/woodpecker-ci/woodpecker/cmd/cli lint
+    when:
+      path:
+        - ".woodpecker/**"
+
+  dependencies:
+    image: *golang_image
+    group: prepare
+    commands:
+      - echo "machine github.com login $${GITHUB_LOGIN} password $${GITHUB_PASSWORD}" > /root/.netrc
+      - chmod 600 /root/.netrc
+      - go env -w GOPRIVATE=github.com/ringsq
+      - go mod vendor
+    when:
+      path: *when_path
+
+
+  test:
+    image: *golang_image
+    group: test
+    commands:
+      - go test -race ./...
+    when:
+      path: *when_path
+
